@@ -31,9 +31,12 @@ export default function ShopLists() {
   const [fixedShopLists, setFixedShopLists] = React.useState([]);
   const [searchQuery, setSearchQuery] = React.useState("");
   const [loading, setLoading] = React.useState(false);
+
+  // this is the callback function that is fetching all the list of vape shops from firebase collection
   const fetchShops = React.useCallback(async () => {
     setLoading(true);
     const tempShops = [];
+    // the collection name is shops and getDocs method available on firebase is getting all the lists
     const querySnapshot = await getDocs(collection(db, "shops"));
     querySnapshot.forEach((doc) => {
       tempShops.push({
@@ -60,9 +63,7 @@ export default function ShopLists() {
   }, [searchQuery]);
 
   React.useEffect(() => {
-    // if (searchQuery.length > 2) {
     filterShop();
-    // }
   }, [searchQuery]);
 
   const markAsFavourite = async (item) => {

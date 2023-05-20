@@ -15,8 +15,8 @@ export default function Login() {
   const router = useRouter();
   const { signIn } = useAuth();
   const [state, setState] = React.useState({
-    email: "khatiwada2012@gmail.com",
-    password: "123456",
+    email: "",
+    password: "",
     emailError: "",
     passwordError: "",
     formError: "",
