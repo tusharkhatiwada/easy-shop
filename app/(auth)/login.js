@@ -24,8 +24,8 @@ export default function Login() {
   const auth = getAuth(app);
   const { signIn } = useAuth();
   const [state, setState] = React.useState({
-    email: "",
-    password: "",
+    email: "test@test.com",
+    password: "123456",
     emailError: "",
     passwordError: "",
     formError: "",
@@ -129,6 +129,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
     width: "100%",
+    backgroundColor: "#97B8A4",
   },
   logo: {
     width: 100,

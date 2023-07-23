@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "easy-shop",
-    "slug": "easy-shop",
+    "name": "authentic-cocktails",
+    "slug": "authentic-cocktails",
     "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -9,7 +9,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#97B8A4"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
@@ -18,9 +18,9 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#97B8A4"
       },
-      "package": "com.tusharkhatiwada.vapeshop",
+      "package": "com.tusharkhatiwada.authenticcocktails",
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyBZg-iIj_ABhIMBx2TjmHKCOllNFzNwYWU"
@@ -30,7 +30,7 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "scheme": "easy-shop",
+    "scheme": "authentic-cocktails",
     "extra": {
       "eas": {
         "projectId": "fa78cb76-d516-441d-80b1-5695360d9699"

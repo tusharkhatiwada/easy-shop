@@ -11,8 +11,8 @@ import {
   TextInput,
   View,
   Pressable,
+  FlatList,
 } from "react-native";
-import { Button } from "../../components";
 
 import {
   collection,
@@ -33,144 +33,100 @@ export default function ShopLists() {
   const [searchQuery, setSearchQuery] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
-  const handleSearch = async () => {
+  // this is the callback function that is fetching all the list of vape shops from firebase collection
+  const fetchShops = React.useCallback(async () => {
     setLoading(true);
-    if (searchQuery.length) {
-      const tempShops = [];
-      const tempShopAndItems = [];
-      // the collection name is shops and getDocs method available on firebase is getting all the lists
-      const querySnapshot = await getDocs(collection(db, "shop"));
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        tempShops.push(data);
+    const tempShops = [];
+    // the collection name is shops and getDocs method available on firebase is getting all the lists
+    const querySnapshot = await getDocs(collection(db, "drinks"));
+    querySnapshot.forEach((doc) => {
+      tempShops.push({
+        ...doc.data(),
+        id: doc.id,
       });
-      const itemsResult = tempShops.filter((d) =>
-        d.items.some((item) =>
-          item.name.toLowerCase().includes(searchQuery.toLowerCase()),
-        ),
-      );
-
-      const result = itemsResult.map((shop) => {
-        shop.items.some((item) => {
-          if (item.name.toLowerCase().includes(searchQuery.toLowerCase())) {
-            tempShopAndItems.push({
-              id: shop.id,
-              shopName: shop.name,
-              location: shop.location,
-              coordinates: shop.coordinates,
-              items: {
-                itemName: item.name,
-                quantity: item.quantity,
-                price: item.price,
-              },
-            });
-          }
-        });
-        return shop.name;
-      });
-      setShopLists(tempShopAndItems);
-    }
+    });
+    setShopLists(tempShops);
+    setFixedShopLists(tempShops);
     setLoading(false);
+  }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchShops();
+    }, []),
+  );
+
+  const filterShop = React.useCallback(() => {
+    // searchQuery is the value from the search input component
+    const filtered = fixedShopLists.filter((el) =>
+      el?.city?.includes(searchQuery),
+    );
+    setShopLists(filtered);
+  }, [searchQuery]);
+
+  React.useEffect(() => {
+    filterShop();
+  }, [searchQuery]);
+
+  const markAsFavourite = async (item) => {
+    setLoading(true);
+    const docRef = doc(db, "shops", item.id);
+    const updatedDoc = await updateDoc(docRef, {
+      isFavourite: !item?.isFavourite,
+    });
+    fetchShops();
+  };
+
+  const renderList = (item) => {
+    return (
+      <Pressable
+        onPress={() => router.push(`/shop/${item?.id}`)}
+        style={styles.listContainer}
+      >
+        <>
+          <Image
+            source={{ uri: item?.thumb }}
+            contentFit='cover'
+            transition={500}
+            style={styles.image}
+          />
+          <Text numberOfLines={1} style={styles.shopName}>
+            {item?.drinkName}
+          </Text>
+          <Text numberOfLines={1} style={styles.city}>
+            {item.category} / {item?.alcholoic}
+          </Text>
+          <View style={styles.favouriteWrapper}>
+            <Text style={styles.products}>{item.glass}</Text>
+            <EntypoIcon
+              name={item?.isFavourite ? "heart" : "heart-outlined"}
+              color={item?.isFavourite ? "red" : "gray"}
+              size={24}
+              style={{ marginRight: 10 }}
+              onPress={() => markAsFavourite(item)}
+            />
+          </View>
+        </>
+      </Pressable>
+    );
   };
   return (
     <View style={styles.container}>
-      <Text
-        style={{
-          fontSize: 22,
-          fontWeight: "bold",
-          color: "#23649A",
-          marginBottom: 5,
-        }}
-      >
-        What do you need?
-      </Text>
-      <TextInput
-        placeholder='Eg. Bread, Apples'
+      {/* <TextInput
+        placeholder='Enter location to search...'
         value={searchQuery}
         onChangeText={(text) => setSearchQuery(text)}
         style={styles.input}
+      /> */}
+      <FlashList
+        data={shopLists}
+        renderItem={({ item }) => renderList(item)}
+        estimatedItemSize={200}
+        numColumns={2}
+        // refreshControl={
+        //   <ActivityIndicator size='large' color='tomato' animating={loading} />
+        // }
       />
-      <Button title='Search' onPress={() => handleSearch()} loading={loading} />
-      <View style={{ marginVertical: 20 }}>
-        {shopLists.length ? (
-          shopLists.map((shop) => {
-            return (
-              <Link
-                key={shop.shopName}
-                href={{
-                  pathname: "/shop",
-                  params: {
-                    shop: JSON.stringify(shop),
-                  },
-                }}
-                style={{
-                  marginVertical: 5,
-                  borderBottomColor: "dimgray",
-                  borderBottomWidth: 1,
-                  width: _width,
-                }}
-              >
-                <View
-                  style={{
-                    flex: 1,
-                    width: _width - 40,
-                  }}
-                >
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 22,
-                        fontWeight: "bold",
-                        color: "#23649A",
-                      }}
-                    >
-                      Shop: {shop.shopName}
-                    </Text>
-                    <Link
-                      href={{
-                        pathname: "/map",
-                        params: {
-                          lat: shop.coordinates.lat,
-                          lng: shop.coordinates.lng,
-                          name: shop.shopName,
-                        },
-                      }}
-                    >
-                      <EntypoIcon
-                        name='location-pin'
-                        color='#F6931C'
-                        size={40}
-                      />
-                    </Link>
-                  </View>
-                  <View style={{ paddingHorizontal: 2 }}>
-                    <View
-                      style={{
-                        marginVertical: 5,
-                        gap: 4,
-                      }}
-                    >
-                      <Text style={{ fontSize: 18 }}>
-                        {shop.items.itemName}
-                      </Text>
-                      <Text>Qty: {shop.items.quantity}</Text>
-                      <Text>Price: £{shop.items.price}</Text>
-                    </View>
-                  </View>
-                </View>
-              </Link>
-            );
-          })
-        ) : searchQuery ? (
-          <Text>No Shops found for this item</Text>
-        ) : null}
-      </View>
     </View>
   );
 }
@@ -232,7 +188,5 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     marginBottom: 10,
     backgroundColor: "white",
-    minHeight: 50,
-    fontSize: 18,
   },
 });

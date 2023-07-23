@@ -6,20 +6,12 @@ export default function HomeLayout() {
   return (
     <Stack
       screenOptions={{
-        headerTitle: "Easy Shops",
+        headerTitle: "Authentic Cocktails",
         headerBackTitle: "Back",
         headerStyle: {
-          backgroundColor: "#23649A",
+          backgroundColor: "#97B8A4",
         },
         headerTintColor: "#FFFFFF",
-        headerRight: () => (
-          <Entypo
-            name='shopping-cart'
-            color='white'
-            size={30}
-            onPress={() => router.push("/cart")}
-          />
-        ),
       }}
     />
   );

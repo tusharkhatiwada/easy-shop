@@ -8,12 +8,12 @@ let auth;
 let db;
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDyHCA_wMTX9D2uVAl_1ruF9NBfG5fSnWo",
-  authDomain: "easy-shop-14c3d.firebaseapp.com",
-  projectId: "easy-shop-14c3d",
-  storageBucket: "easy-shop-14c3d.appspot.com",
-  messagingSenderId: "665479039287",
-  appId: "1:665479039287:web:ed2940064e96d2dafdf2b2",
+  apiKey: "AIzaSyBHDfDlSbWUYj55nTjnDhs_rJ6-FUSU100",
+  authDomain: "cocktail-lists.firebaseapp.com",
+  projectId: "cocktail-lists",
+  storageBucket: "cocktail-lists.appspot.com",
+  messagingSenderId: "868460016282",
+  appId: "1:868460016282:web:fe522b30cc48d8f2c32523",
 };
 
 if (getApps().length === 0) {
