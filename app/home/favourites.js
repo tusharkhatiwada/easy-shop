@@ -2,51 +2,42 @@ import EntypoIcon from "@expo/vector-icons/Entypo";
 import { FlashList } from "@shopify/flash-list";
 import { Image } from "expo-image";
 import * as React from "react";
-import { Link, useFocusEffect, useRouter } from "expo-router";
 import {
   ActivityIndicator,
   Dimensions,
   StyleSheet,
   Text,
-  TextInput,
   View,
-  Pressable,
-  FlatList,
 } from "react-native";
 
+import { useFocusEffect } from "expo-router";
 import {
   collection,
   doc,
   getDocs,
+  query,
   updateDoc,
   where,
-  query,
 } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 
 const _width = Dimensions.get("screen").width;
 
-export default function ShopLists() {
-  const router = useRouter();
-  const [shopLists, setShopLists] = React.useState([]);
-  const [fixedShopLists, setFixedShopLists] = React.useState([]);
-  const [searchQuery, setSearchQuery] = React.useState("");
+export default function Favourites() {
+  const [favouriteLists, setFavouriteLists] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
-
-  // this is the callback function that is fetching all the list of vape shops from firebase collection
   const fetchShops = React.useCallback(async () => {
     setLoading(true);
     const tempShops = [];
-    // the collection name is shops and getDocs method available on firebase is getting all the lists
-    const querySnapshot = await getDocs(collection(db, "drinks"));
+    const q = query(collection(db, "drinks"), where("isFavourite", "==", true));
+    const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
       tempShops.push({
         ...doc.data(),
         id: doc.id,
       });
     });
-    setShopLists(tempShops);
-    setFixedShopLists(tempShops);
+    setFavouriteLists(tempShops);
     setLoading(false);
   }, []);
 
@@ -55,18 +46,6 @@ export default function ShopLists() {
       fetchShops();
     }, []),
   );
-
-  const filterShop = React.useCallback(() => {
-    // searchQuery is the value from the search input component
-    const filtered = fixedShopLists.filter((el) =>
-      el?.city?.includes(searchQuery),
-    );
-    setShopLists(filtered);
-  }, [searchQuery]);
-
-  React.useEffect(() => {
-    filterShop();
-  }, [searchQuery]);
 
   const markAsFavourite = async (item) => {
     setLoading(true);
@@ -79,53 +58,39 @@ export default function ShopLists() {
 
   const renderList = (item) => {
     return (
-      <Pressable
-        onPress={() => router.push(`/shop/${item?.id}`)}
-        style={styles.listContainer}
-      >
-        <>
-          <Image
-            source={{ uri: item?.thumb }}
-            contentFit='cover'
-            transition={500}
-            style={styles.image}
+      <View style={styles.listContainer}>
+        <Image
+          source={{ uri: item.thumb }}
+          contentFit='cover'
+          transition={500}
+          style={styles.image}
+        />
+        <Text numberOfLines={1} style={styles.shopName}>
+          {item.drinkName}
+        </Text>
+        <Text numberOfLines={1} style={styles.city}>
+          {item.category} / {item?.alcoholic}
+        </Text>
+        <View style={styles.favouriteWrapper}>
+          <Text style={styles.products}>{item.glass}</Text>
+          <EntypoIcon
+            name={item.isFavourite ? "heart" : "heart-outlined"}
+            color={item.isFavourite ? "red" : "gray"}
+            size={24}
+            style={{ marginRight: 10 }}
+            onPress={() => markAsFavourite(item)}
           />
-          <Text numberOfLines={1} style={styles.shopName}>
-            {item?.drinkName}
-          </Text>
-          <Text numberOfLines={1} style={styles.city}>
-            {item.category} / {item?.alcoholic}
-          </Text>
-          <View style={styles.favouriteWrapper}>
-            <Text style={styles.products}>{item.glass}</Text>
-            <EntypoIcon
-              name={item?.isFavourite ? "heart" : "heart-outlined"}
-              color={item?.isFavourite ? "red" : "gray"}
-              size={24}
-              style={{ marginRight: 10 }}
-              onPress={() => markAsFavourite(item)}
-            />
-          </View>
-        </>
-      </Pressable>
+        </View>
+      </View>
     );
   };
   return (
     <View style={styles.container}>
-      {/* <TextInput
-        placeholder='Enter location to search...'
-        value={searchQuery}
-        onChangeText={(text) => setSearchQuery(text)}
-        style={styles.input}
-      /> */}
       <FlashList
-        data={shopLists}
+        data={favouriteLists}
         renderItem={({ item }) => renderList(item)}
         estimatedItemSize={200}
         numColumns={2}
-        // refreshControl={
-        //   <ActivityIndicator size='large' color='tomato' animating={loading} />
-        // }
       />
     </View>
   );
@@ -167,16 +132,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   products: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: "400",
   },
   city: {
     flex: 1,
     paddingHorizontal: 5,
-    fontSize: 12,
   },
   favouriteWrapper: {
-    flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
