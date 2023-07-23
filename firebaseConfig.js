@@ -8,12 +8,12 @@ let auth;
 let db;
 
 const firebaseConfig = {
-  apiKey: "AIzaSyB6uZBZDh3JQRk8BGVzay6DCuUyscQt-7s",
-  authDomain: "vape-shop-7a95f.firebaseapp.com",
-  projectId: "vape-shop-7a95f",
-  storageBucket: "vape-shop-7a95f.appspot.com",
-  messagingSenderId: "802726480478",
-  appId: "1:802726480478:web:ee09ddc87fcf9b7e4dc2cf",
+  apiKey: "AIzaSyDyHCA_wMTX9D2uVAl_1ruF9NBfG5fSnWo",
+  authDomain: "easy-shop-14c3d.firebaseapp.com",
+  projectId: "easy-shop-14c3d",
+  storageBucket: "easy-shop-14c3d.appspot.com",
+  messagingSenderId: "665479039287",
+  appId: "1:665479039287:web:ed2940064e96d2dafdf2b2",
 };
 
 if (getApps().length === 0) {
@@ -26,4 +26,4 @@ if (getApps().length === 0) {
   db = getFirestore(app);
 }
 
-export { auth, db };
+export { auth, db, app };

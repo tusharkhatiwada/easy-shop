@@ -1,5 +1,4 @@
 export default function firebaseError(code) {
-  console.log("===Code===", code);
   let errorMessage = "";
   switch (code.substr(5)) {
     case "ERROR_EMAIL_ALREADY_IN_USE":

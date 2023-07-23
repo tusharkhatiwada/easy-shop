@@ -1,23 +1,23 @@
 import { Stack, useRouter } from "expo-router";
 import Entypo from "@expo/vector-icons/Entypo";
 
-export default function HomeLayout() {
+export default function ShopLayout() {
   const router = useRouter();
   return (
     <Stack
       screenOptions={{
-        headerTitle: "Easy Shops",
+        headerTitle: "Orders",
         headerBackTitle: "Back",
         headerStyle: {
           backgroundColor: "#23649A",
         },
         headerTintColor: "#FFFFFF",
-        headerRight: () => (
+        headerLeft: () => (
           <Entypo
-            name='shopping-cart'
+            name='chevron-left'
             color='white'
             size={30}
-            onPress={() => router.push("/cart")}
+            onPress={() => router.back()}
           />
         ),
       }}

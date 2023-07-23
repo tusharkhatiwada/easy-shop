@@ -10,8 +10,8 @@ import {
 export default function Button({
   title,
   loading = false,
-  style,
-  textStyle,
+  style = {},
+  textStyle = {},
   ...rest
 }) {
   return (
@@ -31,7 +31,7 @@ export default function Button({
 const styles = StyleSheet.create({
   button: {
     width: "100%",
-    backgroundColor: "#3498db",
+    backgroundColor: "#F6931C",
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 16,

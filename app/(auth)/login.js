@@ -1,18 +1,27 @@
 import * as React from "react";
-import { StyleSheet, Text, View, KeyboardAvoidingView } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  KeyboardAvoidingView,
+  TouchableOpacity,
+} from "react-native";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { TextInput, Button } from "../../components";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth/react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import { auth } from "../../firebaseConfig";
+import { app } from "../../firebaseConfig";
 import { useAuth } from "../../context/auth";
 import firebaseError from "../../utils/firebaseErrorCodes";
 
 import logo from "../../assets/icon.png";
+import { getAuth } from "firebase/auth";
 
 export default function Login() {
   const router = useRouter();
+  const auth = getAuth(app);
   const { signIn } = useAuth();
   const [state, setState] = React.useState({
     email: "",
@@ -22,7 +31,7 @@ export default function Login() {
     formError: "",
     isLoading: false,
   });
-  const handleLogin = () => {
+  const handleLogin = async () => {
     setState({ ...state, isLoading: true });
     if (!state.email) {
       setState({ ...state, emailError: "Email is required" });
@@ -33,13 +42,15 @@ export default function Login() {
       return;
     }
     signInWithEmailAndPassword(auth, state.email, state.password)
-      .then((userCredential) => {
+      .then(async (userCredential) => {
         const user = userCredential.user;
+        // AsyncStorage is used for the data persistence. The user info is stored as a key value pair
+        await AsyncStorage.setItem("@user_info", JSON.stringify(user));
         setState({ ...state, isLoading: false });
         signIn(user);
       })
       .catch((error) => {
-        const errorMessage = firebaseError(error.code);
+        const errorMessage = firebaseError(error?.code);
         setState({ ...state, formError: errorMessage, isLoading: false });
       });
   };
@@ -84,13 +95,29 @@ export default function Login() {
           <Text style={styles.errorText}>{state.formError}</Text>
         </View>
       )}
-      <Button title='Login' onPress={handleLogin} loading={state.isLoading} />
       <Button
-        title='Go Back'
-        style={{ backgroundColor: "transparent" }}
-        textStyle={{ color: "#3498db" }}
-        onPress={() => router.back()}
+        title='Login'
+        onPress={() => handleLogin()}
+        loading={state.isLoading}
       />
+      <View
+        style={{
+          width: "100%",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Text>Don't have account? </Text>
+        <View>
+          <Button
+            title='Register'
+            style={{ backgroundColor: "transparent" }}
+            textStyle={{ color: "#23649A" }}
+            onPress={() => router.push("/register")}
+          />
+        </View>
+      </View>
     </KeyboardAvoidingView>
   );
 }

@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "vape-shop",
-    "slug": "vape-shop",
-    "version": "1.0.0",
+    "name": "easy-shop",
+    "slug": "easy-shop",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -19,11 +19,23 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "package": "com.tusharkhatiwada.vapeshop",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBZg-iIj_ABhIMBx2TjmHKCOllNFzNwYWU"
+        }
       }
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "scheme": "vape-shop"
+    "scheme": "easy-shop",
+    "extra": {
+      "eas": {
+        "projectId": "fa78cb76-d516-441d-80b1-5695360d9699"
+      }
+    },
+    "owner": "tusharkhatiwada"
   }
 }

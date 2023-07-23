@@ -19,7 +19,7 @@ function useProtectedRoute(user) {
 
     // router.replace("/home");
     if (!user && !inAuthGroup) {
-      router.replace("/start");
+      router.replace("/login");
     } else if (user && inAuthGroup) {
       router.replace("/home/shopLists");
     }

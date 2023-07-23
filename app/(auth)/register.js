@@ -2,6 +2,7 @@ import * as React from "react";
 import { StyleSheet, Text, View, KeyboardAvoidingView } from "react-native";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../firebaseConfig";
 
@@ -23,8 +24,10 @@ export default function Register() {
     passwordError: "",
     formError: "",
   });
+  const [loading, setLoading] = React.useState(false);
 
   const handleRegister = () => {
+    setLoading(true);
     if (!state.name) {
       setState({ ...state, nameError: "Full name is required" });
       return;
@@ -38,13 +41,16 @@ export default function Register() {
       return;
     }
     createUserWithEmailAndPassword(auth, state.email, state.password)
-      .then((userCredential) => {
+      .then(async (userCredential) => {
         const user = userCredential.user;
-        console.log("===User===", user);
+        // AsyncStorage is used for the data persistence. The user info is stored as a key value pair
+        await AsyncStorage.setItem("@user_info", JSON.stringify(user));
+        setLoading(false);
         signIn(user);
       })
       .catch((error) => {
         const errorMessage = firebaseError(error.code);
+        setLoading(false);
         setState({ ...state, formError: errorMessage });
       });
   };
@@ -99,13 +105,30 @@ export default function Register() {
           <Text style={styles.errorText}>{state.formError}</Text>
         </View>
       )}
-      <Button title='Register' onPress={handleRegister} />
       <Button
-        title='Go Back'
-        style={{ backgroundColor: "transparent" }}
-        textStyle={{ color: "#3498db" }}
-        onPress={() => router.back()}
+        loading={loading}
+        disabled={loading}
+        title='Register'
+        onPress={handleRegister}
       />
+      <View
+        style={{
+          width: "100%",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Text>Already have account? </Text>
+        <View>
+          <Button
+            title='Login'
+            style={{ backgroundColor: "transparent" }}
+            textStyle={{ color: "#23649A" }}
+            onPress={() => router.push("/login")}
+          />
+        </View>
+      </View>
     </KeyboardAvoidingView>
   );
 }
